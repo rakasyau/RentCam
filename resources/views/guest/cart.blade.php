@@ -4,60 +4,62 @@
 <div class="container mt-5">
     <h3>Selesaikan Booking</h3>
     
-    <table class="table table-bordered table-hover align-middle">
-        <thead class="table-dark">
-            <tr>
-                <th>Kamera</th>
-                <th>Harga/Hari</th>
-                <th>Jumlah Unit</th>
-                <th>Subtotal (Per Hari)</th>
-                <th style="width: 10%">Aksi</th>
-            </tr>
-        </thead>
-        <tbody>
-            @php $totalPerDay = 0; @endphp
-            
-            @if(session('cart'))
-                @foreach(session('cart') as $id => $details)
-                    @php 
-                        $subtotal = $details['price'] * $details['quantity']; 
-                        $totalPerDay += $subtotal; 
-                    @endphp
-                    <tr>
-                        <td>
-                            <div class="d-flex align-items-center">
-                                <img src="{{ asset('storage/'.$details['photo']) }}" width="50" class="me-2 rounded">
-                                {{ $details['name'] }}
-                            </div>
-                        </td>
-                        <td>Rp {{ number_format($details['price']) }}</td>
-                        <td>{{ $details['quantity'] }}</td>
-                        <td>Rp {{ number_format($subtotal) }}</td>
-                        <td class="text-center">
-                            <form action="{{ route('cart.remove', $id) }}" method="POST">
-                                @csrf
-                                <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Yakin ingin membatalkan sewa kamera ini?')">
-                                    <i class="fas fa-trash"></i> Hapus
-                                </button>
-                            </form>
-                        </td>
-                    </tr>
-                @endforeach
-            @else
+    <div class="table-responsive">
+        <table class="table table-bordered table-hover align-middle">
+            <thead class="table-dark">
                 <tr>
-                    <td colspan="5" class="text-center">Keranjang masih kosong.</td>
+                    <th>Kamera</th>
+                    <th>Harga/Hari</th>
+                    <th>Jumlah Unit</th>
+                    <th>Subtotal (Per Hari)</th>
+                    <th style="width: 10%">Aksi</th>
                 </tr>
+            </thead>
+            <tbody>
+                @php $totalPerDay = 0; @endphp
+                
+                @if(session('cart'))
+                    @foreach(session('cart') as $id => $details)
+                        @php 
+                            $subtotal = $details['price'] * $details['quantity']; 
+                            $totalPerDay += $subtotal; 
+                        @endphp
+                        <tr>
+                            <td>
+                                <div class="d-flex align-items-center">
+                                    <img src="{{ asset('storage/'.$details['photo']) }}" width="50" class="me-2 rounded">
+                                    {{ $details['name'] }}
+                                </div>
+                            </td>
+                            <td>Rp {{ number_format($details['price']) }}</td>
+                            <td>{{ $details['quantity'] }}</td>
+                            <td>Rp {{ number_format($subtotal) }}</td>
+                            <td class="text-center">
+                                <form action="{{ route('cart.remove', $id) }}" method="POST">
+                                    @csrf
+                                    <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Yakin ingin membatalkan sewa kamera ini?')">
+                                        <i class="fas fa-trash"></i> Hapus
+                                    </button>
+                                </form>
+                            </td>
+                        </tr>
+                    @endforeach
+                @else
+                    <tr>
+                        <td colspan="5" class="text-center">Keranjang masih kosong.</td>
+                    </tr>
+                @endif
+            </tbody>
+            @if(session('cart'))
+            <tfoot>
+                <tr>
+                    <td colspan="3" class="text-end fw-bold">Total per Hari</td>
+                    <td colspan="2" class="fw-bold">Rp {{ number_format($totalPerDay) }}</td>
+                </tr>
+            </tfoot>
             @endif
-        </tbody>
-        @if(session('cart'))
-        <tfoot>
-            <tr>
-                <td colspan="3" class="text-end fw-bold">Total per Hari</td>
-                <td colspan="2" class="fw-bold">Rp {{ number_format($totalPerDay) }}</td>
-            </tr>
-        </tfoot>
-        @endif
-    </table>
+        </table>
+    </div>
 
     <form action="{{ route('booking.store') }}" method="POST" enctype="multipart/form-data" class="card p-4">
         @csrf

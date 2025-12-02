@@ -168,6 +168,38 @@
         [data-bs-theme="dark"] .fa-moon { display: inline-block; }
         [data-bs-theme="auto"] .fa-circle-half-stroke { display: inline-block; }
         
+        /* --- 5. MOBILE RESPONSIVE FIXES (UPDATED) --- */
+        @media (max-width: 991.98px) {
+            
+            /* FIX NAVBAR MOBILE: Floating Menu */
+            .navbar-collapse {
+                position: absolute; /* Membuatnya mengambang, tidak mendorong konten ke bawah */
+                top: 100%; /* Muncul tepat di bawah navbar */
+                left: 10px;
+                right: 10px;
+                background: var(--glass-bg); /* Pakai variabel tema */
+                backdrop-filter: blur(25px);
+                -webkit-backdrop-filter: blur(25px);
+                padding: 20px;
+                border-radius: 16px;
+                border: 1px solid var(--glass-border);
+                box-shadow: 0 10px 40px rgba(0,0,0,0.4);
+                z-index: 9999;
+                margin-top: 10px;
+            }
+
+            /* FIX TOMBOL DI MOBILE */
+            .navbar-nav .btn {
+                width: 100%;
+                margin-bottom: 10px;
+                text-align: center;
+            }
+
+            /* Karena navbar sticky, konten butuh padding atas ekstra di mobile */
+            body {
+                padding-top: 20px; 
+            }
+        }
     </style>
 </head>
 <body>
@@ -254,7 +286,7 @@
         </div>
     </nav>
 
-    <div class="container py-5" style="min-height: 85vh;">
+    <div class="container py-5 py-lg-5" style="min-height: 85vh;">
         @if(session('success'))
             <div class="alert alert-success d-flex align-items-center glass text-success border-0" role="alert">
                 <i class="fas fa-check-circle me-2 fs-4"></i>

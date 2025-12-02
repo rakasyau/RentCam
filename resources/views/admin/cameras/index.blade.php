@@ -11,7 +11,7 @@
 
     <div class="card shadow-sm">
         <div class="card-body">
-            <table class="table table-bordered table-striped align-middle">
+            <div class="table-responsive"><table class="table table-bordered table-striped align-middle">
                 <thead class="table-dark">
                     <tr>
                         <th width="5%">No</th>
@@ -53,7 +53,7 @@
                     @endforeach
                 </tbody>
             </table>
-        </div>
+        </div></div>
     </div>
     
     <div class="mt-3">

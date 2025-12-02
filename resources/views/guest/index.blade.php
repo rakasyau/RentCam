@@ -2,47 +2,50 @@
 
 @section('content')
 <div class="container mt-5">
-    <div class="row mb-4 align-items-center">
-        <div class="col-md-6">
-            <h2>Daftar Kamera Tersedia</h2>
+    <div class="container mt-4 mt-lg-5"> <div class="row mb-4 align-items-center g-3"> <div class="col-lg-6 text-center text-lg-start">
+            <h2 class="fw-bold mb-0" style="color: var(--text-color);">Katalog Kamera</h2>
+            <p class="text-muted mb-0 small">Temukan perlengkapan terbaik untukmu</p>
         </div>
         
-        <div class="col-md-6">
+        <div class="col-lg-6">
             <form action="{{ route('home') }}" method="GET">
-                <div class="input-group">
-                    <input type="text" name="search" class="form-control" placeholder="Cari nama kamera..." value="{{ request('search') }}">
-                    <button class="btn btn-primary" type="submit">
-                        <i class="fas fa-search"></i> Cari
+                <div class="input-group shadow-sm glass" style="border-radius: 50px; padding: 5px;">
+                    <input type="text" name="search" 
+                           class="form-control border-0 bg-transparent shadow-none ps-4" 
+                           placeholder="Cari nama kamera..." 
+                           value="{{ request('search') }}"
+                           style="color: var(--text-color);">
+                    
+                    <button class="btn btn-primary rounded-pill px-4" type="submit">
+                        <i class="fas fa-search"></i>
                     </button>
-                    @if(request('search'))
-                        <a href="{{ route('home') }}" class="btn btn-outline-secondary">Reset</a>
-                    @endif
                 </div>
             </form>
         </div>
+    </div>
 
-        <!--kategori kamera-->
-        <div class="row mb-4">
-            <div class="col-12">
-                <div class="d-flex gap-2 overflow-auto pb-2">
-                    <a href="{{ route('home') }}" 
-                    class="btn {{ !request('category') ? 'btn-primary' : 'btn-outline-light' }} rounded-pill px-4"
-                    style="{{ !request('category') ? '' : 'color: var(--text-color); border-color: var(--glass-border); background: var(--glass-bg); backdrop-filter: blur(5px);' }}">
-                    Semua
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="d-flex gap-2 overflow-auto pb-3" style="scrollbar-width: none; -ms-overflow-style: none;">
+                
+                <a href="{{ route('home') }}" 
+                   class="btn {{ !request('category') ? 'btn-primary' : 'glass' }} rounded-pill px-4 flex-shrink-0"
+                   style="{{ !request('category') ? '' : 'color: var(--text-color); border: 1px solid var(--glass-border);' }}">
+                   <i class="fas fa-border-all me-2"></i>Semua
+                </a>
+
+                @foreach($categories as $cat)
+                    <a href="{{ route('home', ['category' => $cat, 'search' => request('search')]) }}" 
+                       class="btn {{ request('category') == $cat ? 'btn-primary' : 'glass' }} rounded-pill px-4 flex-shrink-0"
+                       style="{{ request('category') == $cat ? '' : 'color: var(--text-color); border: 1px solid var(--glass-border);' }}">
+                       {{ $cat }}
                     </a>
-
-                    @foreach($categories as $cat)
-                        <a href="{{ route('home', ['category' => $cat, 'search' => request('search')]) }}" 
-                        class="btn {{ request('category') == $cat ? 'btn-primary' : 'btn-outline-light' }} rounded-pill px-4"
-                        style="{{ request('category') == $cat ? '' : 'color: var(--text-color); border-color: var(--glass-border); background: var(--glass-bg); backdrop-filter: blur(5px);' }}">
-                        {{ $cat }}
-                        </a>
-                    @endforeach
-                </div>
+                @endforeach
             </div>
         </div>
     </div>
 
+   
     @if($cameras->isEmpty())
         <div class="alert alert-warning text-center">
             <i class="fas fa-exclamation-circle"></i> 
@@ -51,8 +54,8 @@
     @endif
     <div class="row">
         @foreach($cameras as $cam)
-        <div class="col-md-4 mb-4">
-            <div class="card">
+        <div class="col-12 col-sm-6 col-lg-4 mb-4">
+            <div class="card h-100">
                 <div class="card-header" style="background-color: white;">
                     <img src="{{ asset('storage/'.$cam->image_path) }}" class="card-img-top" alt="{{ $cam->name }}" style="max-width: 50%; margin: auto; display: block;">
                 </div>

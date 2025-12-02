@@ -20,7 +20,7 @@
     <div class="card mb-4 border-warning">
         <div class="card-header bg-warning text-dark fw-bold">Permintaan Sewa Baru (Pending)</div>
         <div class="card-body">
-            <table class="table table-hover align-middle">
+            <div class="table-responsive"><table class="table table-hover align-middle">
                 <thead>
                     <tr>
                         <th width="5%">No</th> 
@@ -83,13 +83,13 @@
                     @endforelse
                 </tbody>
             </table>
-        </div>
+        </div></div>
     </div>
 
     <div class="card mb-4 border-primary">
         <div class="card-header bg-primary text-white fw-bold">Sedang Disewa (Approved)</div>
         <div class="card-body">
-            <table class="table table-hover align-middle">
+            <div class="table-responsive"><table class="table table-hover align-middle">
                 <thead>
                     <tr>
                         <th width="5%">No</th>
@@ -152,7 +152,7 @@
                     @endforelse
                 </tbody>
             </table>
-        </div>
+        </div></div>
     </div>
 </div>
 @endsection
