@@ -20,7 +20,6 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot()
     {
-        // Paksa skema HTTPS jika aplikasi berjalan di production atau environment ngrok
         if($this->app->environment('production')) {
             URL::forceScheme('https');
         }

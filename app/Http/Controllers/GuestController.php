@@ -7,6 +7,7 @@ use App\Models\Camera;
 use App\Models\Booking;
 use App\Models\BookingDetail;
 use Illuminate\Support\Facades\DB;
+use Barryvdh\DomPDF\Facade\Pdf;
 
 class GuestController extends Controller
 {
@@ -60,39 +61,30 @@ class GuestController extends Controller
     // Proses Final "Booking Sekarang"
     public function storeBooking(Request $request) {
         $request->validate([
-            // after:today = Harus besok atau seterusnya
-            // before_or_equal:+3 days = Maksimal 3 hari dari sekarang
-            'pickup_date' => 'required|date|after:today|before_or_equal:+3 days', 
-            
+            'pickup_date' => 'required|date|after:today|before_or_equal:+3 days',
             'duration' => 'required|integer|min:1',
             'ktp_image' => 'required|image|mimes:jpeg,png,jpg|max:2048',
             'client_name' => 'required|string|max:255',
-            'client_contact' => 'required|string|max:20', // Max 20 char untuk No HP
-        ], [
-            // (Opsional) Pesan error kustom biar user paham kenapa ditolak
-            'pickup_date.after' => 'Booking minimal H-1 sebelum pengambilan.',
-            'pickup_date.before_or_equal' => 'Booking maksimal hanya bisa dilakukan H-3.'
+            'client_contact' => 'required|string|max:20',
         ]);
 
         $cart = session()->get('cart');
         if(!$cart) return redirect()->back()->with('error', 'Keranjang kosong!');
 
-        DB::transaction(function() use ($request, $cart) {
-            // 1. Upload KTP
+        // PERUBAHAN DI SINI:
+        // Tambahkan '$booking =' di depan DB::transaction untuk menangkap hasil return
+        $booking = DB::transaction(function() use ($request, $cart) {
+            
             $ktpPath = $request->file('ktp_image')->store('ktp_uploads', 'public');
 
-            // 2. Hitung Total
             $grandTotal = 0;
             foreach($cart as $id => $details) {
                 $grandTotal += $details['price'] * $details['quantity'] * $request->duration;
             }
 
-            // 3. Simpan Booking Utama
-            $booking = Booking::create([
-                // SIMPAN DATA PENYEWA DI SINI
+            $newBooking = Booking::create([
                 'client_name' => $request->client_name,
                 'client_contact' => $request->client_contact,
-                
                 'ktp_image_path' => $ktpPath,
                 'pickup_date' => $request->pickup_date,
                 'return_date' => date('Y-m-d', strtotime($request->pickup_date. ' + '.$request->duration.' days')),
@@ -101,19 +93,26 @@ class GuestController extends Controller
                 'status' => 'pending'
             ]);
 
-            // 4. Simpan Detail & Kurangi Stok Sementara (Opsional, atau kurangi saat approve)
             foreach($cart as $id => $details) {
                 BookingDetail::create([
-                    'booking_id' => $booking->id,
+                    'booking_id' => $newBooking->id,
                     'camera_id' => $id,
                     'qty' => $details['quantity'],
                     'subtotal' => $details['price'] * $details['quantity'] * $request->duration
                 ]);
             }
+
+            // PENTING: Kembalikan objek booking ke luar transaksi
+            return $newBooking;
         });
 
-        session()->forget('cart'); // Kosongkan keranjang
-        return redirect()->route('home')->with('success', 'Booking berhasil! Tunggu konfirmasi admin.');
+        session()->forget('cart');
+
+        // Sekarang $booking sudah dikenali di sini
+        return redirect()->route('home')->with([
+            'success' => 'Booking berhasil! Silakan download bukti sewa Anda.',
+            'booking_id' => $booking->id 
+        ]);
     }
 
     // FUNGSI HAPUS ITEM DARI KERANJANG
@@ -138,5 +137,17 @@ class GuestController extends Controller
 
     public function help() {
         return view('guest.help');
+    }
+
+    // FUNGSI CETAK PDF
+    public function printInvoice($id) {
+        // Ambil data booking beserta detail item dan kameranya
+        $booking = Booking::with('details.camera')->findOrFail($id);
+
+        // Load view khusus PDF (nanti kita buat)
+        $pdf = Pdf::loadView('guest.invoice_pdf', compact('booking'));
+
+        // Download file dengan nama otomatis
+        return $pdf->download('Invoice-RentCam-'.$booking->id.'.pdf');
     }
 }

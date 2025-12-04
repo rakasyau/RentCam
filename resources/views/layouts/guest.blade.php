@@ -288,10 +288,19 @@
 
     <div class="container py-5 py-lg-5" style="min-height: 85vh;">
         @if(session('success'))
-            <div class="alert alert-success d-flex align-items-center glass text-success border-0" role="alert">
-                <i class="fas fa-check-circle me-2 fs-4"></i>
-                <div>{{ session('success') }}</div>
-                <button type="button" class="btn-close ms-auto" data-bs-dismiss="alert"></button>
+            <div class="alert alert-success d-flex flex-column align-items-center glass text-success border-0 text-center py-4" role="alert">
+                <i class="fas fa-check-circle mb-3" style="font-size: 3rem;"></i>
+                <h4 class="fw-bold">Berhasil!</h4>
+                <p class="mb-3">{{ session('success') }}</p>
+
+                @if(session('booking_id'))
+                    <a href="{{ route('booking.invoice', session('booking_id')) }}" class="btn btn-primary shadow-lg px-4 py-2">
+                        <i class="fas fa-file-pdf me-2"></i> Download Bukti Booking (PDF)
+                    </a>
+                    <small class="mt-2 text-muted">*Simpan file ini untuk pengambilan barang</small>
+                @endif
+
+                <button type="button" class="btn-close position-absolute top-0 end-0 m-3" data-bs-dismiss="alert"></button>
             </div>
         @endif
 
