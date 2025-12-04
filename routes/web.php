@@ -31,11 +31,10 @@ Route::middleware('auth')->prefix('admin')->group(function () {
 
     // Tambahan Route untuk pengembalian barang
     Route::post('/booking/{id}/complete', [DashboardController::class, 'completeBooking'])->name('booking.complete');
-
-    // Route untuk cetak invoice (PDF)
-    Route::get('/booking/invoice/{id}', [GuestController::class, 'printInvoice'])->name('booking.invoice');
-
 });
+
+// Route untuk cetak invoice (PDF)
+Route::get('/booking/invoice/{id}', [GuestController::class, 'printInvoice'])->name('booking.invoice');
 
 
 
